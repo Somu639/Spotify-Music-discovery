@@ -4,20 +4,49 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --foreground: #121212;
+  --app-bg: #ffffff;
+  --app-shell: #f5f5f7;
+  --app-panel: #ffffff;
+  --app-surface: #efeff1;
+  --app-elevated: #e5e5ea;
+  --app-border: #d1d1d6;
+  --app-text: #121212;
+  --app-muted: #6e6e73;
+  --app-subtle: #8e8e93;
+  --app-chip: #e8e8ed;
+  --app-chip-hover: #dcdce2;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--app-text);
+  background: var(--app-bg);
+  font-family: var(--font-geist-sans), "Circular Spotify", Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+.spotify-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #c7c7cc transparent;
+}
+
+.spotify-scroll::-webkit-scrollbar {
+  width: 12px;
+}
+
+.spotify-scroll::-webkit-scrollbar-thumb {
+  background-color: #c7c7cc;
+  border-radius: 6px;
+  border: 3px solid var(--app-shell);
+}
+
+.spotify-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 @layer utilities {
