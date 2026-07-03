@@ -16,7 +16,7 @@ export function FeaturedArtistHero({ artist }: FeaturedArtistHeroProps) {
   const playing = isArtistPlaying && isPlaying;
 
   return (
-    <section className="relative mx-4 mt-4 overflow-hidden rounded-lg border border-app-border bg-gradient-to-r from-emerald-50 via-violet-50 to-white shadow-sm sm:mx-8">
+    <section className="relative mx-4 mt-4 overflow-hidden rounded-lg border border-app-border bg-gradient-to-r from-emerald-950/80 via-violet-950/60 to-app-panel sm:mx-8">
       <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-end sm:p-8">
         <img
           src={artist.imageUrl}
@@ -52,7 +52,7 @@ export function FeaturedArtistHero({ artist }: FeaturedArtistHeroProps) {
             </button>
             <button
               type="button"
-              className="rounded-full border border-app-border bg-white px-6 py-2 text-sm font-bold text-app-text transition hover:border-app-text hover:scale-105"
+              className="rounded-full border border-app-border bg-app-elevated px-6 py-2 text-sm font-bold text-app-text transition hover:border-app-muted hover:scale-105"
             >
               Follow
             </button>

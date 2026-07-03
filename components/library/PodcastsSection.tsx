@@ -38,7 +38,7 @@ export function PodcastsSection() {
             <article
               key={pod.id}
               className={`group flex gap-4 rounded-lg p-4 transition ${
-                isCurrent ? "bg-emerald-50 ring-1 ring-[#1DB954]/30" : "border border-app-border bg-app-panel hover:bg-app-shell"
+                isCurrent ? "bg-[#1DB954]/15 ring-1 ring-[#1DB954]/30" : "border border-app-border bg-app-panel hover:bg-app-surface"
               }`}
             >
               <div className="relative shrink-0">

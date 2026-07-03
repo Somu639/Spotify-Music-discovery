@@ -44,7 +44,7 @@ export function SpotifyPlayer() {
   const muted = volumePct === 0;
 
   return (
-    <footer className="fixed bottom-0 inset-x-0 z-50 h-[90px] border-t border-app-border bg-app-panel px-2 shadow-[0_-4px_24px_rgba(0,0,0,0.06)] sm:px-4">
+    <footer className="fixed bottom-0 inset-x-0 z-50 h-[90px] border-t border-app-border bg-app-panel px-2 shadow-[0_-4px_24px_rgba(0,0,0,0.45)] sm:px-4">
       <div className="grid h-full grid-cols-[1fr_auto_1fr] items-center gap-2">
         <div className="flex min-w-0 items-center gap-3">
           {currentTrack ? (
@@ -107,12 +107,12 @@ export function SpotifyPlayer() {
               onClick={togglePlay}
               disabled={!currentTrack}
               aria-label={isPlaying ? "Pause" : "Play"}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-app-text text-white transition hover:scale-105 disabled:opacity-40"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black transition hover:scale-105 disabled:opacity-40"
             >
               {isPlaying ? (
-                <Pause className="h-5 w-5 fill-white" />
+                <Pause className="h-5 w-5 fill-black" />
               ) : (
-                <Play className="h-5 w-5 fill-white pl-0.5" />
+                <Play className="h-5 w-5 fill-black pl-0.5" />
               )}
             </button>
             <button type="button" onClick={next} aria-label="Next">

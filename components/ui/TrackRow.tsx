@@ -26,7 +26,7 @@ export function TrackRow({
   return (
     <tr
       className={`group border-b border-app-border transition ${
-        isCurrent ? "bg-emerald-50" : "hover:bg-app-shell"
+        isCurrent ? "bg-[#1DB954]/15" : "hover:bg-app-surface"
       }`}
     >
       <td className="px-4 py-2 text-center text-app-subtle">

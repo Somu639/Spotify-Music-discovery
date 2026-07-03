@@ -302,7 +302,7 @@ export function SmartShuffleBar({
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="flex items-center gap-4 rounded-xl border border-[#1DB954]/40 bg-emerald-50 p-4">
+                  <div className="flex items-center gap-4 rounded-xl border border-[#1DB954]/40 bg-[#1DB954]/10 p-4">
                     <img
                       src={bridge.bridgeTrack.coverUrl}
                       alt={bridge.bridgeTrack.title}

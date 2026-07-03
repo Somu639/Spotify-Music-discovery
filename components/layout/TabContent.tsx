@@ -21,7 +21,7 @@ interface TabContentProps {
 function TabHeader({
   title,
   subtitle,
-  gradient = "from-violet-100",
+  gradient = "from-violet-900/40",
 }: {
   title: string;
   subtitle?: string;
@@ -56,7 +56,7 @@ export function TabContent({
           <TabHeader
             title="Music"
             subtitle="Your full library"
-            gradient="from-blue-100"
+            gradient="from-blue-900/40"
           />
           <MusicSection selectedPlaylistId={selectedPlaylistId} />
         </>
@@ -68,7 +68,7 @@ export function TabContent({
           <TabHeader
             title="Trending"
             subtitle="AI-powered discovery — why tracks spike"
-            gradient="from-purple-100"
+            gradient="from-purple-900/40"
           />
           <div id="insights">
             <InsightsBanner />
@@ -109,7 +109,7 @@ export function TabContent({
           <TabHeader
             title="Sync F&F Playlist"
             subtitle="Playlists shared from friends & family"
-            gradient="from-neutral-200"
+            gradient="from-neutral-800/50"
           />
           <FriendsFamilySection
             selectedPlaylistId={selectedPlaylistId}
@@ -122,7 +122,7 @@ export function TabContent({
     case "podcasts":
       return (
         <>
-          <TabHeader title="Podcast" gradient="from-fuchsia-100" />
+          <TabHeader title="Podcast" gradient="from-fuchsia-900/40" />
           <PodcastsSection />
         </>
       );

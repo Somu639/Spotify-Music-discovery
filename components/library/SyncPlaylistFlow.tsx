@@ -123,7 +123,7 @@ function SyncProgress({ step }: { step: SyncStep }) {
 
   return (
     <div
-      className="mt-4 rounded-lg border border-[#1DB954]/30 bg-emerald-50 px-4 py-3"
+      className="mt-4 rounded-lg border border-[#1DB954]/30 bg-[#1DB954]/10 px-4 py-3"
       role="status"
       aria-live="polite"
     >

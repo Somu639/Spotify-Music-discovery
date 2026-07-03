@@ -128,7 +128,7 @@ export function DemoWalkthrough() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="pointer-events-none fixed z-[56] rounded-xl ring-2 ring-[#1DB954] ring-offset-2 ring-offset-white"
+                className="pointer-events-none fixed z-[56] rounded-xl ring-2 ring-[#1DB954] ring-offset-2 ring-offset-app-bg"
                 style={{
                   top: targetEl.getBoundingClientRect().top - 4,
                   left: targetEl.getBoundingClientRect().left - 4,
