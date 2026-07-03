@@ -127,7 +127,7 @@ function SyncProgress({ step }: { step: SyncStep }) {
       role="status"
       aria-live="polite"
     >
-      <p className="text-sm font-semibold text-[#1a7f37]">
+      <p className="text-sm font-semibold text-[#1DB954]">
         {step === "complete"
           ? SYNC_STEP_LABELS.complete
           : SYNC_STEP_LABELS[step as keyof typeof SYNC_STEP_LABELS]}

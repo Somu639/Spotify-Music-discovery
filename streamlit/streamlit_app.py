@@ -48,9 +48,10 @@ st.set_page_config(
 st.markdown(
     """
 <style>
+  .stApp { background: #121212 !important; }
   .block-container { padding: 0 !important; max-width: 100% !important; }
-  header[data-testid="stHeader"] { background: transparent; }
-  iframe { border: none; width: 100%; min-height: 92vh; }
+  header[data-testid="stHeader"] { background: #121212; }
+  iframe { border: none; width: 100%; min-height: 92vh; background: #121212; }
 </style>
 """,
     unsafe_allow_html=True,
