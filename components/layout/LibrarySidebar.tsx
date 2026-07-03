@@ -15,6 +15,7 @@ import { CONTENT_TABS } from "@/lib/content-tabs";
 import { usePlayer } from "@/lib/player-context";
 import type { ContentTab } from "@/types";
 import { FilterPill } from "@/components/ui/FilterPill";
+import { GlobalSearchBar } from "@/components/search/GlobalSearchBar";
 import { useMemo, useState } from "react";
 
 interface LibrarySidebarProps {
@@ -58,6 +59,7 @@ export function LibrarySidebar({
   const focusMainSearch = () => {
     const input = document.getElementById("main-search") as HTMLInputElement | null;
     input?.focus();
+    input?.select();
   };
 
   return (
@@ -210,9 +212,13 @@ export function LibrarySidebar({
 export function MainHeader({
   activeTab,
   onTabChange,
+  searchQuery,
+  onSearchChange,
 }: {
   activeTab: ContentTab;
   onTabChange: (tab: ContentTab) => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
 }) {
   return (
     <header className="sticky top-0 z-40 shrink-0 bg-app-bg/95 px-4 py-3 backdrop-blur-md sm:px-6">
@@ -229,15 +235,7 @@ export function MainHeader({
         >
           <ChevronRight className="h-5 w-5" />
         </button>
-        <div className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app-muted" />
-          <input
-            id="main-search"
-            type="search"
-            placeholder="What do you want to play?"
-            className="w-full rounded-full border-0 bg-[#242424] py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-app-muted outline-none focus:ring-2 focus:ring-white/20"
-          />
-        </div>
+        <GlobalSearchBar query={searchQuery} onQueryChange={onSearchChange} />
       </div>
 
       <nav

@@ -512,6 +512,24 @@ export function getAllTracks(): Track[] {
   });
 }
 
+/** Full catalog for search — playlists, synced, trending, and Hindi tracks */
+export function getSearchCatalog(): Track[] {
+  const seen = new Set<string>();
+  const merged: Track[] = [];
+
+  for (const track of [
+    ...getAllTracks(),
+    ...getTrendingCatalogTracks(),
+    ...getHindiTracks(),
+  ]) {
+    if (seen.has(track.id)) continue;
+    seen.add(track.id);
+    merged.push(track);
+  }
+
+  return merged;
+}
+
 export function getLikedTracksForLibrary(likedIds: Set<string>): Track[] {
   const all = getAllTracks();
   const fromLikes = all.filter((t) => likedIds.has(t.id));

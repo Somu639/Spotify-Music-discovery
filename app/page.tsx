@@ -6,6 +6,7 @@ import { SmartShuffleBar } from "@/components/shuffle/SmartShuffleBar";
 import { DemoWalkthrough } from "@/components/DemoWalkthrough";
 import { LibrarySidebar, MainHeader } from "@/components/layout/LibrarySidebar";
 import { ContentTabBar } from "@/components/layout/ContentTabBar";
+import { SearchResults } from "@/components/search/SearchResults";
 import { TabContent } from "@/components/layout/TabContent";
 import { SpotifyPlayer } from "@/components/layout/SpotifyPlayer";
 import { NowPlayingView } from "@/components/layout/NowPlayingView";
@@ -37,6 +38,9 @@ function AppShell() {
   const [currentPlaylistId, setCurrentPlaylistId] = useState("late-night-coding");
   const [playHistory, setPlayHistory] = useState<string[]>(VARIED_PLAY_HISTORY);
   const [simulated, setSimulated] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const trimmedSearch = searchQuery.trim();
 
   useEffect(() => {
     const nextTab = isContentTab(tabFromUrl) ? tabFromUrl : "all";
@@ -46,7 +50,7 @@ function AppShell() {
 
   useEffect(() => {
     mainRef.current?.scrollTo({ top: 0, behavior: "auto" });
-  }, [activeTab]);
+  }, [activeTab, trimmedSearch]);
 
   const switchTab = useCallback(
     (tab: ContentTab, playlistId?: string | null) => {
@@ -71,7 +75,10 @@ function AppShell() {
   );
 
   const handleTabClick = useCallback(
-    (tab: ContentTab) => switchTab(tab),
+    (tab: ContentTab) => {
+      setSearchQuery("");
+      switchTab(tab);
+    },
     [switchTab]
   );
 
@@ -98,24 +105,35 @@ function AppShell() {
           onSelectPlaylist={(id) => switchTab("music", id)}
         />
 
-        <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border-l-[3px] border-app-accent-purple/70 bg-app-bg shadow-[inset_0_1px_0_0_rgba(168,85,247,0.15)]">
-          <MainHeader activeTab={activeTab} onTabChange={handleTabClick} />
+        <div className="relative flex min-w-0 flex-1 flex-col rounded-lg border-l-[3px] border-app-accent-purple/70 bg-app-bg shadow-[inset_0_1px_0_0_rgba(168,85,247,0.15)]">
+          <div className="relative z-50 shrink-0">
+            <MainHeader
+              activeTab={activeTab}
+              onTabChange={handleTabClick}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+          </div>
 
           <main
             ref={mainRef}
-            className="spotify-scroll relative z-0 flex-1 overflow-y-auto pb-24 md:pb-28"
+            className="spotify-scroll relative z-0 min-h-0 flex-1 overflow-y-auto overflow-x-hidden pb-24 md:pb-28"
           >
-            <TabContent
-              activeTab={activeTab}
-              selectedPlaylistId={selectedPlaylistId}
-              onSelectPlaylist={(id) =>
-                switchTab(activeTab === "friends" ? "friends" : "music", id)
-              }
-              onClearPlaylist={() => switchTab("friends", null)}
-              onSimulateLoop={handleSimulateLoop}
-              simulated={simulated}
-              onResetSimulation={handleResetSimulation}
-            />
+            {trimmedSearch ? (
+              <SearchResults query={trimmedSearch} />
+            ) : (
+              <TabContent
+                activeTab={activeTab}
+                selectedPlaylistId={selectedPlaylistId}
+                onSelectPlaylist={(id) =>
+                  switchTab(activeTab === "friends" ? "friends" : "music", id)
+                }
+                onClearPlaylist={() => switchTab("friends", null)}
+                onSimulateLoop={handleSimulateLoop}
+                simulated={simulated}
+                onResetSimulation={handleResetSimulation}
+              />
+            )}
           </main>
         </div>
       </div>
