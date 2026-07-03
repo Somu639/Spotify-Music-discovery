@@ -88,7 +88,7 @@ function AppShell() {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-app-bg">
+    <div className="flex h-full min-h-0 flex-col bg-app-bg">
       <div className="flex min-h-0 flex-1">
         <LibrarySidebar
           activeTab={activeTab}
@@ -136,7 +136,7 @@ function AppShell() {
 
 function PageFallback() {
   return (
-    <div className="flex h-screen items-center justify-center bg-app-bg text-app-muted">
+    <div className="flex h-full min-h-0 items-center justify-center bg-app-bg text-app-muted">
       Loading…
     </div>
   );

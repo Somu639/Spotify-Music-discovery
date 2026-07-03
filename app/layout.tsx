@@ -19,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
-      <body className={`${plusJakarta.variable} font-sans antialiased`}>
+    <html lang="en">
+      <body className={`${plusJakarta.variable} font-sans antialiased h-full`}>
         {children}
       </body>
     </html>

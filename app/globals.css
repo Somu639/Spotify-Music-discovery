@@ -18,16 +18,23 @@
   --app-chip-hover: #404040;
 }
 
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+  height: 100%;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
 body {
   color: var(--app-text);
   background: var(--app-bg);
   font-family: var(--font-geist-sans), "Circular Spotify", Helvetica, Arial, sans-serif;
   overflow: hidden;
-}
-
-html {
-  scroll-behavior: smooth;
-  color-scheme: dark;
+  height: 100%;
 }
 
 .spotify-scroll {

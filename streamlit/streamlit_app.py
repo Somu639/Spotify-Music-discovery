@@ -1,14 +1,8 @@
 """
 Spotify Music Discovery — Streamlit shell that embeds the full Next.js UI.
 
-Streamlit Community Cloud cannot run Next.js directly. This app loads the same
-React frontend you see locally (npm run dev) inside a full-page iframe.
-
 Set APP_URL in Streamlit secrets to your Vercel deployment, e.g.:
   APP_URL = "https://your-app.vercel.app"
-
-For local testing with Streamlit:
-  APP_URL = "http://localhost:3000"
 """
 from __future__ import annotations
 
@@ -19,6 +13,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 DEFAULT_LOCAL_URL = "http://localhost:3000"
+IFRAME_HEIGHT = 1000
 
 
 def get_app_url() -> str:
@@ -30,9 +25,14 @@ def get_app_url() -> str:
     return DEFAULT_LOCAL_URL
 
 
+def embed_url(base: str) -> str:
+    separator = "&" if "?" in base else "?"
+    return f"{base}{separator}embed=1"
+
+
 def url_reachable(url: str) -> bool:
     try:
-        resp = requests.get(url, timeout=5)
+        resp = requests.get(url, timeout=10)
         return resp.status_code < 500
     except requests.RequestException:
         return False
@@ -48,44 +48,73 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-  .stApp { background: #121212 !important; }
-  .block-container { padding: 0 !important; max-width: 100% !important; }
-  header[data-testid="stHeader"] { background: #121212; }
-  iframe { border: none; width: 100%; min-height: 92vh; background: #121212; }
+  /* Full-bleed embed — hide Streamlit chrome that clips the top */
+  header[data-testid="stHeader"],
+  [data-testid="stToolbar"],
+  [data-testid="stDecoration"],
+  #MainMenu,
+  footer {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    min-height: 0 !important;
+  }
+
+  .stApp {
+    background: #121212 !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .stAppViewContainer,
+  .main,
+  .block-container,
+  [data-testid="stAppViewContainer"],
+  section.main > div {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .block-container {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* iframe wrapper from st.components.v1.iframe */
+  .stApp iframe {
+    border: none !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    display: block !important;
+    background: #121212 !important;
+  }
+
+  div[data-testid="stVerticalBlock"] > div:has(iframe) {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
 </style>
 """,
     unsafe_allow_html=True,
 )
 
 app_url = get_app_url()
+target = embed_url(app_url)
 
 if not url_reachable(app_url):
     st.error(f"Cannot reach the Next.js app at **{app_url}**")
     st.markdown(
         f"""
-The full Spotify Music Discovery UI runs on **Next.js**, not Streamlit.
+Deploy the Next.js app on [Vercel](https://vercel.com/new), then set Streamlit secret:
 
-### Run locally (same UI as always)
-```bash
-cd spotify-ai-discovery
-npm install
-npm run dev
+```toml
+APP_URL = "https://YOUR-VERCEL-URL.vercel.app"
 ```
-Then open [{DEFAULT_LOCAL_URL}]({DEFAULT_LOCAL_URL}) — that is the real frontend.
 
-### Streamlit + local Next.js together
-1. Terminal 1: `npm run dev` (port 3000)
-2. Terminal 2: `streamlit run streamlit/streamlit_app.py` (port 8501)
-3. Set `APP_URL = "{DEFAULT_LOCAL_URL}"` in `.streamlit/secrets.toml`
-
-### Deploy the same UI to the web
-1. Import [Spotify-Music-discovery](https://github.com/Somu639/Spotify-Music-discovery) on [Vercel](https://vercel.com/new)
-2. Add `ANTHROPIC_API_KEY` in Vercel project settings
-3. Set Streamlit secret `APP_URL` to your Vercel URL (e.g. `https://spotify-music-discovery.vercel.app`)
-
-Current configured URL: `{app_url}`
+For local testing: run `npm run dev` and set `APP_URL = "{DEFAULT_LOCAL_URL}"`.
 """
     )
     st.stop()
 
-components.iframe(app_url, height=920, scrolling=True)
+components.iframe(target, height=IFRAME_HEIGHT, scrolling=False)
