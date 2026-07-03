@@ -16,6 +16,8 @@
   --app-subtle: #a7a7a7;
   --app-chip: #333333;
   --app-chip-hover: #404040;
+  --app-accent-purple: #a855f7;
+  --app-accent-purple-muted: rgba(168, 85, 247, 0.18);
 }
 
 html {

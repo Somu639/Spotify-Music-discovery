@@ -16,7 +16,7 @@ export function FeaturedArtistHero({ artist }: FeaturedArtistHeroProps) {
   const playing = isArtistPlaying && isPlaying;
 
   return (
-    <section className="relative mx-4 mt-4 overflow-hidden rounded-lg border border-app-border bg-gradient-to-r from-emerald-950/80 via-violet-950/60 to-app-panel sm:mx-8">
+    <section className="relative mx-4 mt-4 overflow-hidden rounded-lg bg-gradient-to-br from-[#2d1b4e]/90 via-app-panel to-app-bg sm:mx-8 ring-1 ring-app-accent-purple/10">
       <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-end sm:p-8">
         <img
           src={artist.imageUrl}

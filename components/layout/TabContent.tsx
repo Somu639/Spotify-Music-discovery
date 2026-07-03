@@ -58,7 +58,10 @@ export function TabContent({
             subtitle="Your full library"
             gradient="from-blue-900/40"
           />
-          <MusicSection selectedPlaylistId={selectedPlaylistId} />
+          <MusicSection
+            selectedPlaylistId={selectedPlaylistId}
+            onSelectPlaylist={onSelectPlaylist}
+          />
         </>
       );
 

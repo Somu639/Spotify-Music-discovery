@@ -1,9 +1,10 @@
 "use client";
 
-import { Play, Shuffle } from "lucide-react";
+import { Heart, Play, Shuffle } from "lucide-react";
 import {
   getAllPlaylists,
   getAllTracks,
+  getLikedTracksForLibrary,
   getPlaylistById,
 } from "@/lib/spotify-mock";
 import { usePlayer } from "@/lib/player-context";
@@ -12,14 +13,33 @@ import { useMemo, useState } from "react";
 
 interface MusicSectionProps {
   selectedPlaylistId?: string | null;
+  onSelectPlaylist?: (id: string) => void;
 }
 
-export function MusicSection({ selectedPlaylistId }: MusicSectionProps) {
+export function MusicSection({
+  selectedPlaylistId,
+  onSelectPlaylist,
+}: MusicSectionProps) {
   const tracks = useMemo(() => getAllTracks(), []);
+  const playlists = useMemo(() => getAllPlaylists(), []);
   const [query, setQuery] = useState("");
-  const { playQueue, playQueueShuffled } = usePlayer();
+  const { playQueue, playQueueShuffled, likedIds } = usePlayer();
+  const likedTracks = useMemo(
+    () => getLikedTracksForLibrary(likedIds),
+    [likedIds]
+  );
   const playlist =
-    selectedPlaylistId && getPlaylistById(selectedPlaylistId);
+    selectedPlaylistId === "liked"
+      ? {
+          id: "liked",
+          name: "Liked Songs",
+          tracks: likedTracks,
+          mood: "favorites",
+          context: "Your collection",
+        }
+      : selectedPlaylistId
+        ? getPlaylistById(selectedPlaylistId)
+        : undefined;
 
   const filtered = tracks.filter(
     (t) =>
@@ -29,14 +49,21 @@ export function MusicSection({ selectedPlaylistId }: MusicSectionProps) {
   );
 
   if (playlist) {
+    const isLiked = playlist.id === "liked";
     return (
       <section className="px-4 py-6 sm:px-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end">
-          <img
-            src={playlist.tracks[0]?.coverUrl ?? ""}
-            alt=""
-            className="h-48 w-48 rounded-md shadow-2xl sm:h-56 sm:w-56"
-          />
+          {isLiked ? (
+            <div className="flex h-48 w-48 items-center justify-center rounded-md bg-gradient-to-br from-[#5038a0] via-[#8b5cf6] to-[#1DB954] shadow-2xl sm:h-56 sm:w-56">
+              <Heart className="h-20 w-20 fill-white/90 text-white" />
+            </div>
+          ) : (
+            <img
+              src={playlist.tracks[0]?.coverUrl ?? ""}
+              alt=""
+              className="h-48 w-48 rounded-md shadow-2xl sm:h-56 sm:w-56"
+            />
+          )}
           <div className="flex-1">
             <p className="text-xs font-bold uppercase text-app-text">Playlist</p>
             <h1 className="mt-2 text-4xl font-black text-app-text sm:text-5xl">
@@ -95,9 +122,48 @@ export function MusicSection({ selectedPlaylistId }: MusicSectionProps) {
 
   return (
     <section className="px-4 py-6 sm:px-8">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-app-text sm:text-3xl">Your Library</h2>
+        <p className="mt-1 text-sm text-app-muted">
+          {playlists.length} playlists
+        </p>
+      </div>
+
+      <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <button
+          type="button"
+          onClick={() => onSelectPlaylist?.("liked")}
+          className="group rounded-md bg-app-surface/60 p-4 text-left transition hover:bg-app-surface ring-1 ring-transparent hover:ring-app-accent-purple/25"
+        >
+          <div className="mb-3 flex aspect-square items-center justify-center rounded-md bg-gradient-to-br from-[#5038a0] via-[#8b5cf6] to-[#1DB954] shadow-lg">
+            <Heart className="h-10 w-10 fill-white/90 text-white" />
+          </div>
+          <p className="truncate font-bold text-app-text">Liked Songs</p>
+          <p className="text-xs text-app-muted">Playlist · {likedTracks.length} songs</p>
+        </button>
+        {playlists.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => onSelectPlaylist?.(p.id)}
+            className="group rounded-md bg-app-surface/60 p-4 text-left transition hover:bg-app-surface ring-1 ring-transparent hover:ring-app-accent-purple/25"
+          >
+            <img
+              src={p.tracks[0]?.coverUrl ?? ""}
+              alt=""
+              className="mb-3 aspect-square w-full rounded-md object-cover shadow-lg"
+            />
+            <p className="truncate font-bold text-app-text">{p.name}</p>
+            <p className="text-xs text-app-muted">
+              Playlist · {p.tracks.length} songs
+            </p>
+          </button>
+        ))}
+      </div>
+
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-app-text sm:text-3xl">All Music</h2>
+          <h2 className="text-xl font-bold text-app-text">All tracks</h2>
           <p className="mt-1 text-sm text-app-muted">
             {tracks.length} tracks · {getAllPlaylists().length} playlists
           </p>

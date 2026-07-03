@@ -23,6 +23,7 @@ const config: Config = {
           subtle: "var(--app-subtle)",
           chip: "var(--app-chip)",
           "chip-hover": "var(--app-chip-hover)",
+          "accent-purple": "var(--app-accent-purple)",
         },
       },
     },

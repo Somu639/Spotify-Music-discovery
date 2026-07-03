@@ -89,18 +89,17 @@ function AppShell() {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-app-bg">
-      <div className="flex min-h-0 flex-1">
+    <div className="flex h-full min-h-0 flex-col bg-black">
+      <div className="flex min-h-0 flex-1 gap-2 p-2">
         <LibrarySidebar
           activeTab={activeTab}
           onTabChange={switchTab}
           selectedPlaylistId={selectedPlaylistId}
-          onSelectPlaylist={(id) => setSelectedPlaylistId(id)}
+          onSelectPlaylist={(id) => switchTab("music", id)}
         />
 
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-app-bg">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-app-bg">
           <MainHeader />
-          <ContentTabBar activeTab={activeTab} onTabChange={handleTabClick} />
 
           <main
             ref={mainRef}
@@ -109,7 +108,7 @@ function AppShell() {
             <TabContent
               activeTab={activeTab}
               selectedPlaylistId={selectedPlaylistId}
-              onSelectPlaylist={(id) => setSelectedPlaylistId(id)}
+              onSelectPlaylist={(id) => switchTab("music", id)}
               onClearPlaylist={() => switchTab("friends", null)}
               onSimulateLoop={handleSimulateLoop}
               simulated={simulated}

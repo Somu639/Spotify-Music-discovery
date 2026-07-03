@@ -512,6 +512,22 @@ export function getAllTracks(): Track[] {
   });
 }
 
+export function getLikedTracksForLibrary(likedIds: Set<string>): Track[] {
+  const all = getAllTracks();
+  const fromLikes = all.filter((t) => likedIds.has(t.id));
+  if (fromLikes.length >= 5) return fromLikes;
+  const merged = [...fromLikes];
+  const seen = new Set(merged.map((t) => t.id));
+  for (const track of all) {
+    if (merged.length >= 12) break;
+    if (!seen.has(track.id)) {
+      merged.push(track);
+      seen.add(track.id);
+    }
+  }
+  return merged;
+}
+
 export function getPodcasts(): Podcast[] {
   return podcasts;
 }
