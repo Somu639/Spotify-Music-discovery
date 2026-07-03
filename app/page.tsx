@@ -108,7 +108,9 @@ function AppShell() {
             <TabContent
               activeTab={activeTab}
               selectedPlaylistId={selectedPlaylistId}
-              onSelectPlaylist={(id) => switchTab("music", id)}
+              onSelectPlaylist={(id) =>
+                switchTab(activeTab === "friends" ? "friends" : "music", id)
+              }
               onClearPlaylist={() => switchTab("friends", null)}
               onSimulateLoop={handleSimulateLoop}
               simulated={simulated}
