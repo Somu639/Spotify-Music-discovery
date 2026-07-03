@@ -12,8 +12,10 @@ import {
   SkipBack,
   SkipForward,
   ListMusic,
+  Square,
   Volume2,
   VolumeX,
+  Maximize2,
 } from "lucide-react";
 import { formatMs, usePlayer } from "@/lib/player-context";
 
@@ -37,6 +39,8 @@ export function SpotifyPlayer() {
     seek,
     toggleLike,
     isLiked,
+    setNowPlayingExpanded,
+    stopPlayback,
   } = usePlayer();
 
   const progressPct = durationMs ? (progressMs / durationMs) * 100 : 0;
@@ -44,24 +48,85 @@ export function SpotifyPlayer() {
   const muted = volumePct === 0;
 
   return (
-    <footer className="fixed bottom-0 inset-x-0 z-50 h-[90px] border-t border-app-border bg-app-panel px-2 shadow-[0_-4px_24px_rgba(0,0,0,0.45)] sm:px-4">
-      <div className="grid h-full grid-cols-[1fr_auto_1fr] items-center gap-2">
-        <div className="flex min-w-0 items-center gap-3">
-          {currentTrack ? (
-            <>
+    <footer className="fixed bottom-0 inset-x-0 z-[90] border-t border-app-border bg-app-panel px-2 shadow-[0_-4px_24px_rgba(0,0,0,0.45)] sm:px-4">
+      {/* Mobile: compact bar — tap to expand full player */}
+      <div className="flex h-[72px] items-center gap-3 md:hidden">
+        {currentTrack ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setNowPlayingExpanded(true)}
+              className="flex min-w-0 flex-1 items-center gap-3 text-left"
+            >
               <img
                 src={currentTrack.coverUrl}
                 alt=""
-                className="h-14 w-14 shrink-0 rounded object-cover shadow-sm"
+                className="h-12 w-12 shrink-0 rounded object-cover"
               />
               <div className="min-w-0">
-                <p className="truncate text-sm text-app-text hover:underline">
+                <p className="truncate text-sm font-medium text-app-text">
                   {currentTrack.title}
                 </p>
-                <p className="truncate text-xs text-app-muted hover:underline">
-                  {currentTrack.artist}
-                </p>
+                <p className="truncate text-xs text-app-muted">{currentTrack.artist}</p>
               </div>
+            </button>
+            <button type="button" onClick={toggleShuffle} aria-label="Shuffle">
+              <Shuffle
+                className={`h-5 w-5 ${shuffle ? "text-[#1DB954]" : "text-app-muted"}`}
+              />
+            </button>
+            <button
+              type="button"
+              onClick={togglePlay}
+              aria-label={isPlaying ? "Pause" : "Play"}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-black"
+            >
+              {isPlaying ? (
+                <Pause className="h-5 w-5 fill-black" />
+              ) : (
+                <Play className="h-5 w-5 fill-black pl-0.5" />
+              )}
+            </button>
+            <button type="button" onClick={stopPlayback} aria-label="Stop">
+              <Square className="h-5 w-5 fill-app-muted text-app-muted" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setNowPlayingExpanded(true)}
+              aria-label="Expand player"
+            >
+              <Maximize2 className="h-5 w-5 text-app-muted" />
+            </button>
+          </>
+        ) : (
+          <p className="px-2 text-xs text-app-subtle">Select a song to play</p>
+        )}
+      </div>
+
+      {/* Desktop: full control bar */}
+      <div className="hidden h-[90px] grid-cols-[1fr_auto_1fr] items-center gap-2 md:grid">
+        <div className="flex min-w-0 items-center gap-3">
+          {currentTrack ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setNowPlayingExpanded(true)}
+                className="flex min-w-0 items-center gap-3 text-left"
+              >
+                <img
+                  src={currentTrack.coverUrl}
+                  alt=""
+                  className="h-14 w-14 shrink-0 rounded object-cover shadow-sm"
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm text-app-text hover:underline">
+                    {currentTrack.title}
+                  </p>
+                  <p className="truncate text-xs text-app-muted hover:underline">
+                    {currentTrack.artist}
+                  </p>
+                </div>
+              </button>
               <button
                 type="button"
                 onClick={() => toggleLike(currentTrack.id)}
@@ -75,16 +140,22 @@ export function SpotifyPlayer() {
                   }`}
                 />
               </button>
+              <button
+                type="button"
+                onClick={() => setNowPlayingExpanded(true)}
+                aria-label="Expand player"
+                className="shrink-0 text-app-muted hover:text-app-text"
+              >
+                <Maximize2 className="h-4 w-4" />
+              </button>
             </>
           ) : (
-            <p className="text-xs text-app-subtle sm:text-sm">
-              Select a song to play
-            </p>
+            <p className="text-xs text-app-subtle sm:text-sm">Select a song to play</p>
           )}
         </div>
 
         <div className="flex max-w-[720px] flex-col items-center gap-1">
-          <div className="flex items-center gap-4 sm:gap-5">
+          <div className="flex items-center gap-3 sm:gap-5">
             <button type="button" onClick={toggleShuffle} aria-label="Shuffle">
               <Shuffle
                 className={`h-4 w-4 ${shuffle ? "text-[#1DB954]" : "text-app-muted hover:text-app-text"}`}
@@ -94,7 +165,7 @@ export function SpotifyPlayer() {
               type="button"
               onClick={toggleShuffleNoRepeat}
               aria-label="Shuffle without repeat"
-              title="Shuffle without repeat — each song plays once"
+              title="Shuffle without repeat"
               className={shuffleNoRepeat ? "text-[#1DB954]" : "text-app-muted hover:text-app-text"}
             >
               <ListMusic className="h-4 w-4" />
@@ -127,6 +198,9 @@ export function SpotifyPlayer() {
                 />
               )}
             </button>
+            <button type="button" onClick={stopPlayback} aria-label="Stop">
+              <Square className="h-4 w-4 fill-app-muted text-app-muted hover:text-app-text" />
+            </button>
           </div>
           <div className="flex w-full min-w-[200px] items-center gap-2 sm:min-w-[400px]">
             <span className="w-10 text-right text-[11px] text-app-muted">
@@ -141,7 +215,7 @@ export function SpotifyPlayer() {
               onChange={(e) => seek(Number(e.target.value))}
               className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-app-elevated accent-[#1DB954] disabled:opacity-40"
               style={{
-                background: `linear-gradient(to right, #1DB954 ${progressPct}%, #e5e5ea ${progressPct}%)`,
+                background: `linear-gradient(to right, #1DB954 ${progressPct}%, #404040 ${progressPct}%)`,
               }}
               aria-label="Seek"
             />
@@ -174,7 +248,7 @@ export function SpotifyPlayer() {
             onChange={(e) => setVolume(Number(e.target.value) / 100)}
             className="h-1 w-16 cursor-pointer appearance-none rounded-full bg-app-elevated accent-[#1DB954] sm:w-24"
             style={{
-              background: `linear-gradient(to right, #1DB954 ${volumePct}%, #e5e5ea ${volumePct}%)`,
+              background: `linear-gradient(to right, #1DB954 ${volumePct}%, #404040 ${volumePct}%)`,
             }}
             aria-label="Volume"
           />

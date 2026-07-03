@@ -8,6 +8,7 @@ import { LibrarySidebar, MainHeader } from "@/components/layout/LibrarySidebar";
 import { ContentTabBar } from "@/components/layout/ContentTabBar";
 import { TabContent } from "@/components/layout/TabContent";
 import { SpotifyPlayer } from "@/components/layout/SpotifyPlayer";
+import { NowPlayingView } from "@/components/layout/NowPlayingView";
 import { PlayerProvider } from "@/lib/player-context";
 import { SyncProvider } from "@/lib/sync-context";
 import { isContentTab } from "@/lib/content-tabs";
@@ -103,7 +104,7 @@ function AppShell() {
 
           <main
             ref={mainRef}
-            className="spotify-scroll relative z-0 flex-1 overflow-y-auto pb-28"
+            className="spotify-scroll relative z-0 flex-1 overflow-y-auto pb-24 md:pb-28"
           >
             <TabContent
               activeTab={activeTab}
@@ -124,6 +125,7 @@ function AppShell() {
         variant="mobile"
       />
       <SpotifyPlayer />
+      <NowPlayingView />
       <SmartShuffleBar
         currentPlaylistId={currentPlaylistId}
         playHistory={playHistory}

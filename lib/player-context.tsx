@@ -48,6 +48,9 @@ interface PlayerContextValue {
   seek: (ms: number) => void;
   toggleLike: (trackId: string) => void;
   isLiked: (trackId: string) => boolean;
+  nowPlayingExpanded: boolean;
+  setNowPlayingExpanded: (open: boolean) => void;
+  stopPlayback: () => void;
 }
 
 const PlayerContext = createContext<PlayerContextValue | null>(null);
@@ -83,6 +86,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [repeat, setRepeat] = useState<RepeatMode>("off");
   const [volume, setVolumeState] = useState(0.75);
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [nowPlayingExpanded, setNowPlayingExpanded] = useState(false);
 
   const currentTrack = queue[currentIndex] ?? null;
   const durationMs =
@@ -112,6 +116,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       setCurrentIndex(startIndex);
       setProgressMs(0);
       setIsPlaying(true);
+      setNowPlayingExpanded(true);
       resetShuffleRemaining(tracks.length, startIndex);
     },
     [resetShuffleRemaining]
@@ -180,6 +185,19 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }, [currentIndex, queue.length, repeat, shuffle, resetShuffleRemaining]);
 
   nextRef.current = next;
+
+  const stopPlayback = useCallback(() => {
+    setIsPlaying(false);
+    setQueue([]);
+    setCurrentIndex(0);
+    setProgressMs(0);
+    setNowPlayingExpanded(false);
+    loadedTrackIdRef.current = null;
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.removeAttribute("src");
+    }
+  }, []);
 
   const prev = useCallback(() => {
     if (progressMs > 3000) {
@@ -345,6 +363,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
           return updated;
         }),
       isLiked: (id) => likedIds.has(id),
+      nowPlayingExpanded,
+      setNowPlayingExpanded,
+      stopPlayback,
     }),
     [
       queue,
@@ -358,6 +379,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       repeat,
       volume,
       likedIds,
+      nowPlayingExpanded,
       playTrack,
       playQueue,
       playQueueShuffled,
@@ -365,8 +387,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       prev,
       setVolume,
       seek,
-      currentIndex,
-      queue.length,
+      stopPlayback,
       resetShuffleRemaining,
     ]
   );
