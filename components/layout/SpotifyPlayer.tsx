@@ -48,7 +48,7 @@ export function SpotifyPlayer() {
   const muted = volumePct === 0;
 
   return (
-    <footer className="fixed bottom-0 inset-x-0 z-[90] border-t border-app-border bg-app-panel px-2 shadow-[0_-4px_24px_rgba(0,0,0,0.45)] sm:px-4">
+    <footer className="fixed bottom-0 inset-x-0 z-[90] border-t-[2px] border-app-accent-purple/40 bg-app-panel px-2 shadow-[0_-4px_24px_rgba(0,0,0,0.45),inset_0_1px_0_0_rgba(168,85,247,0.2)] sm:px-4">
       {/* Mobile: compact bar — tap to expand full player */}
       <div className="flex h-[72px] items-center gap-3 md:hidden">
         {currentTrack ? (
@@ -215,7 +215,7 @@ export function SpotifyPlayer() {
               onChange={(e) => seek(Number(e.target.value))}
               className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-app-elevated accent-[#1DB954] disabled:opacity-40"
               style={{
-                background: `linear-gradient(to right, #1DB954 ${progressPct}%, #404040 ${progressPct}%)`,
+                background: `linear-gradient(to right, #a855f7 0%, #1DB954 6%, #1DB954 ${progressPct}%, #404040 ${progressPct}%)`,
               }}
               aria-label="Seek"
             />

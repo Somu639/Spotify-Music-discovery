@@ -98,8 +98,8 @@ function AppShell() {
           onSelectPlaylist={(id) => switchTab("music", id)}
         />
 
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-app-bg">
-          <MainHeader />
+        <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border-l-[3px] border-app-accent-purple/70 bg-app-bg shadow-[inset_0_1px_0_0_rgba(168,85,247,0.15)]">
+          <MainHeader activeTab={activeTab} onTabChange={handleTabClick} />
 
           <main
             ref={mainRef}

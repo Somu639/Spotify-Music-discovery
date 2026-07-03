@@ -11,6 +11,7 @@ import type { TrendingGroup, TrendingItem } from "@/types";
 import { ClaudeLoadingBlock } from "@/components/ui/ClaudeLoading";
 import { SectionRow } from "@/components/ui/SectionRow";
 import { TrendCard } from "./TrendCard";
+import { FilterPill } from "@/components/ui/FilterPill";
 
 type TrendView = "all" | "mood" | "genre";
 
@@ -176,18 +177,14 @@ export default function TrendingSection() {
     <div data-tour="trending-section" className="pb-8">
       <div className="mb-6 flex flex-wrap gap-2 px-4 sm:px-8">
         {VIEW_TABS.map((tab) => (
-          <button
+          <FilterPill
             key={tab.id}
-            type="button"
+            variant="spotify"
+            selected={view === tab.id}
             onClick={() => setView(tab.id)}
-            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
-              view === tab.id
-                ? "bg-[#1DB954] text-black"
-                : "bg-app-chip text-app-text hover:bg-app-chip-hover"
-            }`}
           >
             {tab.label}
-          </button>
+          </FilterPill>
         ))}
       </div>
 
