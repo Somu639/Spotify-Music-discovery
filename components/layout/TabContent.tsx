@@ -12,6 +12,7 @@ interface TabContentProps {
   activeTab: ContentTab;
   selectedPlaylistId: string | null;
   onSelectPlaylist: (id: string) => void;
+  onOpenCreatePlaylist: () => void;
   onClearPlaylist: () => void;
   onSimulateLoop: () => void;
   simulated: boolean;
@@ -41,6 +42,7 @@ export function TabContent({
   activeTab,
   selectedPlaylistId,
   onSelectPlaylist,
+  onOpenCreatePlaylist,
   onClearPlaylist,
   onSimulateLoop,
   simulated,
@@ -61,6 +63,7 @@ export function TabContent({
           <MusicSection
             selectedPlaylistId={selectedPlaylistId}
             onSelectPlaylist={onSelectPlaylist}
+            onOpenCreatePlaylist={onOpenCreatePlaylist}
           />
         </>
       );

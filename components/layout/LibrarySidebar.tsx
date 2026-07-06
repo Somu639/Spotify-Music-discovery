@@ -7,11 +7,13 @@ import {
   Heart,
   Home,
   Library,
+  Music2,
   Plus,
   Search,
 } from "lucide-react";
 import { getLikedTracksForLibrary } from "@/lib/spotify-mock";
 import { CONTENT_TABS } from "@/lib/content-tabs";
+import { usePlaylists } from "@/lib/playlists-context";
 import { usePlayer } from "@/lib/player-context";
 import type { ContentTab } from "@/types";
 import { FilterPill } from "@/components/ui/FilterPill";
@@ -23,6 +25,7 @@ interface LibrarySidebarProps {
   onTabChange: (tab: ContentTab, playlistId?: string | null) => void;
   selectedPlaylistId: string | null;
   onSelectPlaylist: (id: string, type: "own" | "synced") => void;
+  onOpenCreatePlaylist: () => void;
 }
 
 function SpotifyLogo({ className = "h-8 w-8" }: { className?: string }) {
@@ -50,8 +53,10 @@ export function LibrarySidebar({
   onTabChange,
   selectedPlaylistId,
   onSelectPlaylist,
+  onOpenCreatePlaylist,
 }: LibrarySidebarProps) {
   const { likedIds, playTrack, setNowPlayingExpanded } = usePlayer();
+  const { userPlaylists } = usePlaylists();
   const [likedOpen, setLikedOpen] = useState(false);
 
   const likedTracks = useMemo(() => getLikedTracks(likedIds), [likedIds]);
@@ -114,6 +119,7 @@ export function LibrarySidebar({
           </button>
           <button
             type="button"
+            onClick={onOpenCreatePlaylist}
             className="flex h-8 w-8 items-center justify-center rounded-full text-app-muted hover:bg-white/10 hover:text-white"
             aria-label="Create playlist"
           >
@@ -124,11 +130,41 @@ export function LibrarySidebar({
         <div className="flex-1 overflow-y-auto spotify-scroll px-2 pb-2">
           <button
             type="button"
+            onClick={onOpenCreatePlaylist}
             className="mx-1 flex w-[calc(100%-8px)] items-center gap-3 rounded-md px-3 py-2 text-sm font-bold text-app-muted hover:bg-white/5 hover:text-white"
           >
             <Plus className="h-5 w-5 shrink-0" />
             Create Playlist
           </button>
+
+          {userPlaylists.map((playlist) => (
+            <button
+              key={playlist.id}
+              type="button"
+              onClick={() => {
+                onTabChange("music", playlist.id);
+                onSelectPlaylist(playlist.id, "own");
+              }}
+              className={`mx-1 mt-1 flex w-[calc(100%-8px)] items-center gap-3 rounded-md px-3 py-2 text-sm font-bold transition ${
+                selectedPlaylistId === playlist.id
+                  ? "bg-white/10 text-white"
+                  : "text-app-muted hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              {playlist.tracks[0]?.coverUrl ? (
+                <img
+                  src={playlist.tracks[0].coverUrl}
+                  alt=""
+                  className="h-8 w-8 shrink-0 rounded object-cover"
+                />
+              ) : (
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-[#282828]">
+                  <Music2 className="h-4 w-4 text-app-muted" />
+                </span>
+              )}
+              <span className="truncate">{playlist.name}</span>
+            </button>
+          ))}
 
           <div className="mx-1 mt-1">
             <button
