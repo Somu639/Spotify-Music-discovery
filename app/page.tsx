@@ -15,6 +15,7 @@ import { PlayerProvider } from "@/lib/player-context";
 import { PlaylistsProvider, usePlaylists } from "@/lib/playlists-context";
 import { SyncProvider } from "@/lib/sync-context";
 import { isContentTab } from "@/lib/content-tabs";
+import { defaultAppPath, isPageReload } from "@/lib/page-reload";
 import type { ContentTab } from "@/types";
 
 const VARIED_PLAY_HISTORY = ["ln-1", "ln-2", "ln-3", "ln-4", "ln-5"];
@@ -27,26 +28,44 @@ function AppShell() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mainRef = useRef<HTMLElement>(null);
+  const restoredOnReload = useRef(false);
 
   const tabFromUrl = searchParams.get("tab");
   const playlistFromUrl = searchParams.get("playlist");
 
-  const [activeTab, setActiveTab] = useState<ContentTab>(
-    isContentTab(tabFromUrl) ? tabFromUrl : "all"
+  const [activeTab, setActiveTab] = useState<ContentTab>(() =>
+    isPageReload() ? "all" : isContentTab(tabFromUrl) ? tabFromUrl : "all"
   );
   const [selectedPlaylistId, setSelectedPlaylistId] = useState<string | null>(
-    playlistFromUrl
+    () => (isPageReload() ? null : playlistFromUrl)
   );
   const [currentPlaylistId, setCurrentPlaylistId] = useState("late-night-coding");
   const [playHistory, setPlayHistory] = useState<string[]>(VARIED_PLAY_HISTORY);
   const [simulated, setSimulated] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [createPlaylistOpen, setCreatePlaylistOpen] = useState(false);
-  const { createPlaylist } = usePlaylists();
+  const { createPlaylist, resetUserPlaylists } = usePlaylists();
 
   const trimmedSearch = searchQuery.trim();
 
   useEffect(() => {
+    if (!isPageReload() || restoredOnReload.current) return;
+    restoredOnReload.current = true;
+
+    setActiveTab("all");
+    setSelectedPlaylistId(null);
+    setSearchQuery("");
+    setSimulated(false);
+    setPlayHistory(VARIED_PLAY_HISTORY);
+    setCurrentPlaylistId("late-night-coding");
+    setCreatePlaylistOpen(false);
+    resetUserPlaylists();
+
+    router.replace(defaultAppPath(), { scroll: false });
+  }, [router, resetUserPlaylists]);
+
+  useEffect(() => {
+    if (isPageReload() && !restoredOnReload.current) return;
     const nextTab = isContentTab(tabFromUrl) ? tabFromUrl : "all";
     setActiveTab(nextTab);
     setSelectedPlaylistId(playlistFromUrl);

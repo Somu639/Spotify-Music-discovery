@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { getAllPlaylists as getBuiltinPlaylists } from "@/lib/spotify-mock";
+import { isPageReload } from "@/lib/page-reload";
 import type { Playlist, Track } from "@/types";
 
 const STORAGE_KEY = "spotify-user-playlists";
@@ -37,12 +38,15 @@ interface PlaylistsContextValue {
   addTrackToPlaylist: (playlistId: string, track: Track) => void;
   getPlaylistById: (id: string) => Playlist | undefined;
   isUserPlaylist: (id: string) => boolean;
+  resetUserPlaylists: () => void;
 }
 
 const PlaylistsContext = createContext<PlaylistsContextValue | null>(null);
 
 export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
-  const [userPlaylists, setUserPlaylists] = useState<Playlist[]>(loadUserPlaylists);
+  const [userPlaylists, setUserPlaylists] = useState<Playlist[]>(() =>
+    isPageReload() ? [] : loadUserPlaylists()
+  );
 
   useEffect(() => {
     saveUserPlaylists(userPlaylists);
@@ -91,6 +95,13 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
     [userPlaylists]
   );
 
+  const resetUserPlaylists = useCallback(() => {
+    setUserPlaylists([]);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, []);
+
   const allPlaylists = useMemo(
     () => [...userPlaylists, ...getBuiltinPlaylists()],
     [userPlaylists]
@@ -104,8 +115,9 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
       addTrackToPlaylist,
       getPlaylistById,
       isUserPlaylist,
+      resetUserPlaylists,
     }),
-    [userPlaylists, allPlaylists, createPlaylist, addTrackToPlaylist, getPlaylistById, isUserPlaylist]
+    [userPlaylists, allPlaylists, createPlaylist, addTrackToPlaylist, getPlaylistById, isUserPlaylist, resetUserPlaylists]
   );
 
   return (
