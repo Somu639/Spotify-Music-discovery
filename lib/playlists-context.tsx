@@ -9,27 +9,9 @@ import {
   useState,
 } from "react";
 import { getAllPlaylists as getBuiltinPlaylists } from "@/lib/spotify-mock";
-import { isPageReload } from "@/lib/page-reload";
 import type { Playlist, Track } from "@/types";
 
-const STORAGE_KEY = "spotify-user-playlists";
-
-function loadUserPlaylists(): Playlist[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as Playlist[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveUserPlaylists(playlists: Playlist[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(playlists));
-}
+const LEGACY_STORAGE_KEY = "spotify-user-playlists";
 
 interface PlaylistsContextValue {
   userPlaylists: Playlist[];
@@ -38,19 +20,18 @@ interface PlaylistsContextValue {
   addTrackToPlaylist: (playlistId: string, track: Track) => void;
   getPlaylistById: (id: string) => Playlist | undefined;
   isUserPlaylist: (id: string) => boolean;
-  resetUserPlaylists: () => void;
 }
 
 const PlaylistsContext = createContext<PlaylistsContextValue | null>(null);
 
 export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
-  const [userPlaylists, setUserPlaylists] = useState<Playlist[]>(() =>
-    isPageReload() ? [] : loadUserPlaylists()
-  );
+  const [userPlaylists, setUserPlaylists] = useState<Playlist[]>([]);
 
   useEffect(() => {
-    saveUserPlaylists(userPlaylists);
-  }, [userPlaylists]);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+    }
+  }, []);
 
   const createPlaylist = useCallback((name: string) => {
     const trimmed = name.trim() || "My Playlist";
@@ -61,24 +42,18 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
       mood: "custom",
       context: "your playlist",
     };
-    setUserPlaylists((prev) => {
-      const next = [playlist, ...prev];
-      saveUserPlaylists(next);
-      return next;
-    });
+    setUserPlaylists((prev) => [playlist, ...prev]);
     return playlist;
   }, []);
 
   const addTrackToPlaylist = useCallback((playlistId: string, track: Track) => {
-    setUserPlaylists((prev) => {
-      const next = prev.map((playlist) => {
+    setUserPlaylists((prev) =>
+      prev.map((playlist) => {
         if (playlist.id !== playlistId) return playlist;
         if (playlist.tracks.some((t) => t.id === track.id)) return playlist;
         return { ...playlist, tracks: [...playlist.tracks, track] };
-      });
-      saveUserPlaylists(next);
-      return next;
-    });
+      })
+    );
   }, []);
 
   const getPlaylistById = useCallback(
@@ -95,13 +70,6 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
     [userPlaylists]
   );
 
-  const resetUserPlaylists = useCallback(() => {
-    setUserPlaylists([]);
-    if (typeof window !== "undefined") {
-      localStorage.removeItem(STORAGE_KEY);
-    }
-  }, []);
-
   const allPlaylists = useMemo(
     () => [...userPlaylists, ...getBuiltinPlaylists()],
     [userPlaylists]
@@ -115,9 +83,8 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
       addTrackToPlaylist,
       getPlaylistById,
       isUserPlaylist,
-      resetUserPlaylists,
     }),
-    [userPlaylists, allPlaylists, createPlaylist, addTrackToPlaylist, getPlaylistById, isUserPlaylist, resetUserPlaylists]
+    [userPlaylists, allPlaylists, createPlaylist, addTrackToPlaylist, getPlaylistById, isUserPlaylist]
   );
 
   return (
@@ -129,4 +96,8 @@ export function usePlaylists() {
   const ctx = useContext(PlaylistsContext);
   if (!ctx) throw new Error("usePlaylists must be used within PlaylistsProvider");
   return ctx;
+}
+
+export function isSessionPlaylistId(id: string | null): boolean {
+  return Boolean(id?.startsWith("user-"));
 }
